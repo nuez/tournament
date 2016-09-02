@@ -1,0 +1,22 @@
+{#
+/**
+ * @file tournament.html.twig
+ * Default theme implementation to present Tournament data.
+ *
+ * This template is used when viewing Tournament pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_tournament()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('tournament') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>

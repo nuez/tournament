@@ -1,0 +1,58 @@
+add tournament entities:
+  title: 'Create new Tournament entities'
+
+administer tournament entities:
+  title: 'Administer Tournament entities'
+  description: 'Allow to access the administration form to configure Tournament entities.'
+  restrict access: true
+
+delete tournament entities:
+  title: 'Delete Tournament entities'
+
+edit tournament entities:
+  title: 'Edit Tournament entities'
+
+view published tournament entities:
+  title: 'View published Tournament entities'
+
+view unpublished tournament entities:
+  title: 'View unpublished Tournament entities'
+add participant entities:
+  title: 'Create new Participant entities'
+
+administer tournament participant entities:
+  title: 'Administer tournament participant entities'
+  description: 'Allow to access the administration form to configure Participant entities.'
+  restrict access: true
+
+delete tournament participant entities:
+  title: 'Delete tournament participant entities'
+
+edit tournament participant entities:
+  title: 'Edit tournament participant entities'
+
+view published tournament participant entities:
+  title: 'View published tournament participant entities'
+
+view unpublished tournament participant entities:
+  title: 'View unpublished tournament participant entities'
+
+add team entities:
+  title: 'Create new Team entities'
+
+administer team entities:
+  title: 'Administer Team entities'
+  description: 'Allow to access the administration form to configure Team entities.'
+  restrict access: true
+
+delete team entities:
+  title: 'Delete Team entities'
+
+edit team entities:
+  title: 'Edit Team entities'
+
+view published team entities:
+  title: 'View published Team entities'
+
+view unpublished team entities:
+  title: 'View unpublished Team entities'

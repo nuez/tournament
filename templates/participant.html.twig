@@ -1,0 +1,22 @@
+{#
+/**
+ * @file participant.html.twig
+ * Default theme implementation to present Participant data.
+ *
+ * This template is used when viewing Participant pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_participant()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('participant') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>

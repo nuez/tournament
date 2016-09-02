@@ -1,0 +1,6 @@
+# Tournamet plugin types.
+tournament:
+  label: Tournament
+  provider: tournament
+  plugin_manager_service_id: plugin.manager.tournament.manager
+  plugin_definition_decorator_class: \Drupal\plugin\PluginDefinition\ArrayPluginDefinitionDecorator

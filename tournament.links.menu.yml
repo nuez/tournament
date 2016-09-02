@@ -1,0 +1,36 @@
+# Tournament admin overview.
+tournament.admin:
+  title: Tournament
+  description: 'Configure and create tournaments'
+  route_name: tournament.admin
+  parent: system.admin_structure
+
+# Tournament menu items definition
+entity.tournament.collection:
+  title: 'Tournament list'
+  route_name: entity.tournament.collection
+  description: 'List Tournament entities'
+  parent: tournament.admin
+  weight: 100
+
+# Participant menu items definition
+entity.participant.collection:
+  title: 'Participant list'
+  route_name: entity.tournament_participant.collection
+  description: 'List Participant entities'
+  parent: tournament.admin
+  weight: 100
+
+# Team menu items definition
+entity.tournament_team.collection:
+  title: 'Team list'
+  route_name: entity.tournament_team.collection
+  description: 'List Team entities'
+  parent: tournament.admin
+  weight: 100
+
+# tournament_team.admin.structure.settings:
+#  title: Team settings
+#  description: 'Configure Team entities'
+#  route_name: tournament_team.settings
+#  parent: tournament.admin

@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.tournament_participant.tournament_team_reference
+  module:
+    - tournament
+id: tournament_participant.team.tournament_team_reference
+field_name: tournament_team_reference
+entity_type: tournament_participant
+bundle: team
+label: Team
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:tournament_team'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

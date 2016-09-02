@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Contains tournament.module..
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\tour\Entity\Tournament;
+use Drupal\tournament\Entity\TournamentInterface;
+use Drupal\tournament\Plugin\TournamentManager;
+
+
+/**
+ * Implements hook_help().
+ */
+function tournament_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the tournament module.
+    case 'help.page.tournament':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ *
+ * - Create tournament bundles based on detected Tournament Plugin Managers.
+ * - Create 'team' and 'user' bundles for 'participant'.
+ */
+function tournament_entity_bundle_info() {
+
+  /** @var TournamentManager $tournamentPlugins */
+  $tournamentPlugins = \Drupal::service('plugin.manager.tournament.manager');
+  $plugins = $tournamentPlugins->getDefinitions();
+  foreach ($plugins as $pluginDefinition => $pluginInfo) {
+    /** @var TranslatableMarkup $label */
+    $label = $pluginInfo['label'];
+    $bundles['tournament'][$pluginDefinition]['label'] = $label->render();
+  }
+
+  $bundles['tournament']['round_robin']['label'] = t('Round Robin');
+  /**
+   * Create User and Team bundles for the Participant Entity Type.
+   */
+  $bundles['tournament_participant']['user']['label'] = t('User');
+  $bundles['tournament_participant']['team']['label'] = t('Team');
+
+  return $bundles;
+}
+

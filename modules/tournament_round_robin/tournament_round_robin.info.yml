@@ -1,0 +1,7 @@
+name: Round Robin
+type: module
+description: Round Robin Tournament
+core: 8.x
+package: Tournament
+dependencies:
+  - tournament

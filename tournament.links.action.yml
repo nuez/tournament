@@ -1,0 +1,15 @@
+entity.tournament.add_form:
+  route_name: 'tournament.add_page'
+  title: 'Add a tournament'
+  appears_on:
+    - entity.tournament.collection
+entity.tournament_participant.add_form:
+  route_name: entity.tournament_participant.add_form
+  title: 'Add Participant'
+  appears_on:
+    - entity.tournament_participant.collection
+entity.tournament_team.add_form:
+  route_name: entity.tournament_team.add_form
+  title: 'Add Team'
+  appears_on:
+    - entity.tournament_team.collection

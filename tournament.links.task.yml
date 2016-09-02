@@ -1,0 +1,69 @@
+# Tournament routing definition
+entity.tournament.canonical:
+  route_name: entity.tournament.canonical
+  base_route: entity.tournament.canonical
+  title: 'View'
+
+entity.tournament.edit_form:
+  route_name: entity.tournament.edit_form
+  base_route: entity.tournament.canonical
+  title: Edit
+
+entity.tournament.delete_form:
+  route_name:  entity.tournament.delete_form
+  base_route:  entity.tournament.canonical
+  title: Delete
+  weight: 10
+
+entity.tournament.add_participants:
+  route_name: entity.tournament.add_participants
+  base_route: entity.tournament.canonical
+  title: Add Participants
+  weight: 9
+
+tournament.tournament_type:
+  base_route: tournament.tournament_type
+  route_name: tournament.tournament_type
+  title: 'Configure'
+
+# Participant routing definition
+participant.settings_tab:
+  route_name: tournament_participant.participant_type
+  title: 'Settings'
+  base_route: tournament_participant.participant_type
+entity.participant.canonical:
+  route_name: entity.tournament_participant.canonical
+  base_route: entity.tournament_participant.canonical
+  title: 'View'
+
+entity.participant.edit_form:
+  route_name: entity.tournament_participant.edit_form
+  base_route: entity.tournament_participant.canonical
+  title: Edit
+
+entity.participant.delete_form:
+  route_name:  entity.tournament_participant.delete_form
+  base_route:  entity.tournament_participant.canonical
+  title: Delete
+  weight: 10
+# Team routing definition
+tournament_team.settings_tab:
+  route_name: tournament_team.settings
+  title: 'Settings'
+  base_route: tournament_team.settings
+entity.tournament_team.canonical:
+  route_name: entity.tournament_team.canonical
+  base_route: entity.tournament_team.canonical
+  title: 'View'
+
+entity.tournament_team.edit_form:
+  route_name: entity.tournament_team.edit_form
+  base_route: entity.tournament_team.canonical
+  title: Edit
+
+entity.tournament_team.delete_form:
+  route_name:  entity.tournament_team.delete_form
+  base_route:  entity.tournament_team.canonical
+  title: Delete
+  weight: 10
+

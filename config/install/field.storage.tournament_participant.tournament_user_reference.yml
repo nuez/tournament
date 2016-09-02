@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - tournament
+id: tournament_participant.tournament_user_reference
+field_name: tournament_user_reference
+entity_type: tournament_participant
+type: entity_reference
+settings:
+  target_type: user
+module: core
+locked: true
+cardinality: 1
+translatable: false
+indexes: {  }
+persist_with_no_fields: true
+custom_storage: false

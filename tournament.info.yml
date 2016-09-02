@@ -1,0 +1,7 @@
+name: Tournament
+type: module
+description: Organise tournaments with Drupal 8
+core: 8.x
+package: Other
+dependencies:
+  - plugin

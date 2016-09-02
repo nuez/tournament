@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Contains round_robin.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function tournament_round_robin_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the round_robin module.
+    case 'help.page.tournament_round_robin':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Round Robin Tournament') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function tournament_round_robin_theme() {
+  $theme = [];
+
+  return $theme;
+}

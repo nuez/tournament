@@ -1,0 +1,9 @@
+services:
+  plugin.manager.tournament.manager:
+    class: Drupal\tournament\Plugin\TournamentManager
+    parent: default_plugin_manager
+  tournament.paramconverter.tournament_plugin_instance:
+    class: Drupal\tournament\ParamConverter\TournamentPluginInstanceConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@plugin.plugin_type_manager']

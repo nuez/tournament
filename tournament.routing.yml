@@ -1,0 +1,59 @@
+tournament.admin:
+  path: '/admin/structure/tournament'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Structure'
+  requirements:
+    _permission: 'access administration pages'
+
+tournament.add_page:
+  path: 'admin/structure/tournament/add'
+  defaults:
+    _controller: '\Drupal\tournament\Controller\TournamentController::add'
+    _title: 'Add a tournament'
+  requirements:
+    _permission: 'add tournament entities'
+
+tournament.add_form:
+  path: 'admin/structure/tournament/add/{plugin}'
+  defaults:
+    _controller: '\Drupal\tournament\Controller\TournamentController::addForm'
+  requirements:
+    _permission: 'add tournament entities'
+  options:
+    parameters:
+      plugin:
+        type: tournament_plugin_instance
+
+
+# The bundle slug is upcasted to a pluginType for validation. Using a Route Subscriber it is
+# then Downcasted to a string again to work with the Field UI.
+tournament.tournament_type:
+  path: 'admin/structure/tournament/{plugin}/edit'
+  defaults:
+    _controller: '\Drupal\tournament\Controller\TournamentController::settings'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      plugin:
+        type: tournament_plugin_instance
+        to_string: true
+tournament_participant.participant_type:
+  path: 'admin/structure/tournament/participant/{bundle}/edit'
+  defaults:
+    _controller: '\Drupal\tournament\Controller\ParticipantController::settings'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      bundle: '\b(?:team|user)\b'
+
+# @todo Participants are not created through interface. Remove this.
+tournament_participant.add_form:
+  path: 'admin/structure/tournament/participant/add/{bundle}'
+  defaults:
+    _controller: '\Drupal\tournament\Controller\ParticipantController::addForm'
+  requirements:
+    _permission: 'access content'
+    bundle: '\b(?:team|user)\b'
