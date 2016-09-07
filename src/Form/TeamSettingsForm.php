@@ -21,7 +21,7 @@ class TeamSettingsForm extends FormBase {
    *   The unique string identifying the form.
    */
   public function getFormId() {
-    return 'Team_settings';
+    return 'team_settings';
   }
 
   /**

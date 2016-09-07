@@ -51,7 +51,7 @@ use Drupal\user\UserInterface;
  *     "uid" = "user_id",
  *     "langcode" = "langcode",
  *     "status" = "status",
- *     "participant_type" = "p_type"
+ *     "participant_type" = "participant_type"
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/tournament/tournament/{tournament}",
@@ -174,8 +174,10 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
    * @return bool
    */
   public function hasParticipants() {
-    $participants = $this->get('participants')->getValue();
-    return !empty($participants);
+    /** @todo Use Dependency injection for EntityQuery. */
+    $query = \Drupal::entityQuery('tournament_participant')->condition('tournament_reference', $this->id());
+    $result = $query->count()->execute();
+    return $result != 0;
   }
 
   /**
@@ -219,8 +221,7 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
       ->setLabel(t('Tournament type'))
       ->setReadOnly(TRUE);
 
-
-    $fields['p_type'] = BaseFieldDefinition::create('list_string')
+    $fields['participant_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Participant type'))
       ->setDescription(t('The type of participant'))
       ->setSetting('allowed_values', [
@@ -323,13 +324,6 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
       ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was last edited.'));
 
-    $fields['participants'] = BaseFieldDefinition::create('entity_reference')
-      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-      ->setLabel(t('Participants'))
-      ->setDescription(t('Participants for this tournament'))
-      ->setSettings(array(
-        'target_type' => 'tournament_participant',
-      ));
     return $fields;
   }
 }

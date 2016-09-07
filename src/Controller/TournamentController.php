@@ -118,7 +118,6 @@ class TournamentController extends ControllerBase {
       '#type' => 'ul',
       '#items' => $items,
       '#attributes' => [],
-      '#title' => '',
     ];
   }
 }

@@ -32,8 +32,7 @@ class TournamentForm extends ContentEntityForm {
     $plugin = $plugin_type->createInstance($bundle);
 
     $form['data'] = $plugin->buildConfigurationForm(array() , $form_state);
-
-
+    
     return $form;
   }
 

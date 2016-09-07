@@ -7,6 +7,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Defines the Participant entity.
@@ -54,82 +55,15 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
 
   use EntityChangedTrait;
 
+  use StringTranslationTrait;
   /**
    * {@inheritdoc}
    */
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
     parent::preCreate($storage_controller, $values);
-    $values += array(
+    $values += [
 
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getName() {
-    return $this->get('name')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setName($name) {
-    $this->set('name', $name);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
-    return $this->bundle();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCreatedTime() {
-    return $this->get('created')->value;
-  }
-
-  /**
-   * @return TournamentInterface
-   */
-  public function getTournament(){
-    return $this->get('tournament_id')->value;
-  }
-
-  /**
-   * @param $tournament_id
-   * @return $this
-   */
-  public function setTournament($tournament_id){
-    $this->set('tournament_id', $tournament_id);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCreatedTime($timestamp) {
-    $this->set('created', $timestamp);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isPublished() {
-    return (bool) $this->getEntityKey('status');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPublished($published) {
-    $this->set('status', $published ? NODE_PUBLISHED : NODE_NOT_PUBLISHED);
-    return $this;
+    ];
   }
 
   /**
@@ -151,23 +85,32 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
       ->setDescription(t('The UUID of the Participant entity.'))
       ->setReadOnly(TRUE);
 
+
+    $fields['tournament_reference'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tournament reference'))
+      ->setDescription(t('Reference to a tournament'))
+      ->setSettings([
+        'target_type' => 'tournament',
+      ])
+      ->setRequired(TRUE);
+
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Participant entity.'))
-      ->setSettings(array(
+      ->setSettings([
         'max_length' => 50,
         'text_processing' => 0,
-      ))
+      ])
       ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -4,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'hidden',
         'weight' => -4,
-      ))
+      ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -179,10 +122,10 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language code'))
       ->setDescription(t('The language code for the Participant entity.'))
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'language_select',
         'weight' => 10,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
@@ -229,4 +172,89 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
 
     return $fields;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getName() {
+    return $this->get('name')->value;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setName($name) {
+    $this->set('name', $name);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getType() {
+    return $this->bundle();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCreatedTime() {
+    return $this->get('created')->value;
+  }
+
+  /**
+   * @return TournamentInterface
+   */
+  public function getTournament() {
+    return $this->get('tournament_id')->value;
+  }
+
+  /**
+   * @param $tournament_id
+   * @return $this
+   */
+  public function setTournament($tournament_id) {
+    $this->set('tournament_id', $tournament_id);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCreatedTime($timestamp) {
+    $this->set('created', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isPublished() {
+    return (bool) $this->getEntityKey('status');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPublished($published) {
+    $this->set('status', $published ? NODE_PUBLISHED : NODE_NOT_PUBLISHED);
+    return $this;
+  }
+
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage); // TODO: Change the autogenerated stub
+
+    $participant_type = $this->get('type')->value;
+    $this->values;
+    $query = \Drupal::entityQuery('tournament_participant')
+      ->condition('tournament_reference', $this->get('tournament_reference')->target_id)
+      ->condition($participant_type . '_reference', $this->get($participant_type . '_reference')->target_id);
+
+    $result = $query->execute();
+    if(!empty($result)){
+      throw new \Exception($this->t('Cannot add the same participant twice to the same tournament.'));
+    }
+  }
+
 }

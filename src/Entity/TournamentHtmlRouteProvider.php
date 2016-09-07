@@ -44,9 +44,6 @@ class TournamentHtmlRouteProvider extends AdminHtmlRouteProvider {
       $collection->add("entity.{$entity_type_id}.add_form", $add_form_route);
     }
 
-    $add_page_route = $this->getAddPageRoute($entity_type);
-    $collection->add("$entity_type_id.add_page", $add_page_route);
-
     if ($settings_form_route = $this->getSettingsFormRoute($entity_type)) {
       $collection->add("$entity_type_id.settings", $settings_form_route);
     }
@@ -101,8 +98,8 @@ class TournamentHtmlRouteProvider extends AdminHtmlRouteProvider {
       // Content entities with bundles are added via a dedicated controller.
       $route
         ->setDefaults([
-          '_controller' => 'Drupal\tournament\Controller\tournamentController::addForm',
-          '_title_callback' => 'Drupal\tournament\Controller\tournamentController::getAddFormTitle',
+          '_controller' => 'Drupal\tournament\Controller\TournamentController::addForm',
+          '_title_callback' => 'Drupal\tournament\Controller\TournamentController::getAddFormTitle',
         ])
         ->setRequirement('_entity_create_access', $entity_type_id . ':{' . $bundle_entity_type_id . '}');
       $parameters[$bundle_entity_type_id] = ['type' => 'entity:' . $bundle_entity_type_id];
@@ -113,28 +110,6 @@ class TournamentHtmlRouteProvider extends AdminHtmlRouteProvider {
 
       return $route;
     }
-  }
-
-  /**
-   * Gets the add page route.
-   *
-   * @param EntityTypeInterface $entity_type
-   *   The entity type.
-   *
-   * @return \Symfony\Component\Routing\Route|null
-   *   The generated route, if available.
-   */
-  protected function getAddPageRoute(EntityTypeInterface $entity_type) {
-    $route = new Route("/admin/structure/tournament/add");
-    $route
-      ->setDefaults([
-        '_controller' => 'Drupal\tournament\Controller\tournamentController::add',
-        '_title' => "Add {$entity_type->getLabel()}",
-      ])
-      ->setRequirement('_entity_create_access', $entity_type->id())
-      ->setOption('_admin_route', TRUE);
-
-    return $route;
   }
 
   /**

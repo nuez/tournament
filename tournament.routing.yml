@@ -2,7 +2,7 @@ tournament.admin:
   path: '/admin/structure/tournament'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'Structure'
+    _title: 'Tournament'
   requirements:
     _permission: 'access administration pages'
 
@@ -39,15 +39,14 @@ tournament.tournament_type:
       plugin:
         type: tournament_plugin_instance
         to_string: true
+
 tournament_participant.participant_type:
   path: 'admin/structure/tournament/participant/{bundle}/edit'
   defaults:
     _controller: '\Drupal\tournament\Controller\ParticipantController::settings'
   requirements:
     _permission: 'access content'
-  options:
-    parameters:
-      bundle: '\b(?:team|user)\b'
+    bundle: '\b(?:team|user)\b'
 
 # @todo Participants are not created through interface. Remove this.
 tournament_participant.add_form:

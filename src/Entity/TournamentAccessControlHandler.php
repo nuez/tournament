@@ -64,7 +64,7 @@ class TournamentAccessControlHandler extends EntityAccessControlHandler {
    * have been added.
    */
   public function fieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account = NULL, FieldItemListInterface $items = NULL, $return_as_object = FALSE) {
-    if ('p_type' == $field_definition->getName() && $operation != 'view') {
+    if ('participant_type' == $field_definition->getName() && $operation != 'view') {
       /**
        * @var TournamentInterface $entity
        */
