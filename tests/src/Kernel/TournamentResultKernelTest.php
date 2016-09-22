@@ -10,6 +10,8 @@ use Drupal\Core\Language\Language;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\tournament\Entity\Participant;
 use Drupal\tournament\Entity\Tournament;
+use Drupal\tournament\Plugin\TournamentInterface;
+use Drupal\tournament\Plugin\TournamentManager;
 
 /**
  * Class TournamentResultKernelTest
@@ -25,6 +27,7 @@ class TournamentResultKernelTest extends KernelTestBase {
   public static $modules = [
     'system',
     'tournament',
+    'tournament_round_robin',
     'plugin',
     'field',
     'options',
@@ -47,13 +50,21 @@ class TournamentResultKernelTest extends KernelTestBase {
   protected $participants;
 
   /**
+   * Test arbitrary code.
+   */
+  public function testTest() {
+    $this->assertEquals(TRUE, FALSE);
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
 
-   $this->installEntitySchema('tournament');
+    $this->installEntitySchema('tournament');
     $this->installEntitySchema('tournament_participant');
+
 
     $this->tournament = Tournament::create([
       'type' => 'tournament_round_robin',
@@ -70,17 +81,22 @@ class TournamentResultKernelTest extends KernelTestBase {
     $total_participants = rand(2, 20);
 
     for ($i = 0; $i < $total_participants; $i++) {
-      /*$participant = Participant::create([
+      $participant = Participant::create([
         'type' => $this->tournament->getParticipantType(),
-      ]);
-      $this->participants[] = $participant;*/
-    }
-  }
+        'tournament_reference' => $this->tournament->id(),
 
-  /**
-   * Test arbitrary code.
-   */
-  public function testTest(){
-    $this->assertEquals(TRUE, TRUE);
+      ]);
+      $this->participants[] = $participant;
+    }
+
+    /** @var TournamentManager $tournament_manager */
+    $tournament_manager = \Drupal::service('plugin.manager.tournament.manager');
+    $tournament_types = $tournament_manager->getDefinitions();
+    $tournament_type = array_rand($tournament_types);
+
+    /** @var TournamentInterface $tournament_plugin */
+    $tournament_plugin = $tournament_manager->createInstance($tournament_type);
+
+    $this->matches = $tournament_plugin->generateMatches();
   }
 }
