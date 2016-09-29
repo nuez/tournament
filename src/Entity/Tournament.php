@@ -8,11 +8,12 @@
 namespace Drupal\tournament\Entity;
 
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\tournament\Entity\TournamentInterface;
+use Drupal\Core\Field\FieldItemList;
 use Drupal\user\UserInterface;
 
 /**
@@ -63,7 +64,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "tournament.tournament_type"
  * )
  */
-class Tournament extends ContentEntityBase implements TournamentInterface {
+class Tournament extends ContentEntityBase implements TournamentInterface{
 
   use EntityChangedTrait;
 
@@ -168,17 +169,7 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
     return (bool) $this->getEntityKey('status_started');
   }
 
-  /**
-   * See if tournament has participants.
-   *
-   * @return bool
-   */
-  public function hasParticipants() {
-    /** @todo Use Dependency injection for EntityQuery. */
-    $query = \Drupal::entityQuery('tournament_participant')->condition('tournament_reference', $this->id());
-    $result = $query->count()->execute();
-    return $result != 0;
-  }
+
 
   /**
    * See if tournament has started.
@@ -206,6 +197,16 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
     return $this->getEntityKey('participant_type');
   }
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfig() {
+    /** @var FieldItemList $config_item */
+    $config_item = $this->get('config');
+    return $config_item->getValue()[0];
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -221,41 +222,28 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
       ->setLabel(t('Tournament type'))
       ->setReadOnly(TRUE);
 
-    $fields['participant_type'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(t('Participant type'))
-      ->setDescription(t('The type of participant'))
-      ->setSetting('allowed_values', [
-          'user' => t('User'),
-          'tournament_team' => t('Team'),
-        ]
-      )
-      ->setRequired(TRUE)
-      ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
-        'label' => 'above',
-        'type' => 'string',
-        'weight' => 0,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'options_select',
-        'weight' => -4,
-      ))
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Tournament entity.'))
       ->setReadOnly(TRUE);
 
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'))
+      ->setDescription(t('The time that the entity was created.'))
+    ->setTranslatable(FALSE);
+
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'))
+      ->setDescription(t('The time that the entity was last edited.'))
+    ->setTranslatable(FALSE);
+
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
       ->setDescription(t('The user ID of author of the Tournament entity.'))
-      ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
       ->setDefaultValueCallback('Drupal\node\Entity\Node::getCurrentUserId')
-      ->setTranslatable(TRUE)
+      ->setTranslatable(FALSE)
       ->setDisplayOptions('view', array(
         'label' => 'hidden',
         'type' => 'author',
@@ -277,6 +265,7 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Tournament entity.'))
+      ->setTranslatable(TRUE)
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
@@ -316,13 +305,10 @@ class Tournament extends ContentEntityBase implements TournamentInterface {
       ))
       ->setDisplayConfigurable('form', TRUE);
 
-    $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+    $fields['config'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Configuration'))
+      ->setDescription(t('Serialized configuration for the tournament'));
 
-    $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
 
     return $fields;
   }

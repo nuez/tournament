@@ -10,9 +10,9 @@ namespace Drupal\tournament\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a Tournament item annotation object.
+ * Defines a Tournament annotation object.
  *
- * @see \Drupal\tournament\Plugin\TournamentManager
+ * @see \Drupal\tournament\Plugin\TournamentPluginManager
  * @see plugin_api
  *
  * @Annotation

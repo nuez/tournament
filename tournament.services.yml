@@ -2,6 +2,7 @@ services:
   plugin.manager.tournament.manager:
     class: Drupal\tournament\Plugin\TournamentManager
     parent: default_plugin_manager
+    arguments: ['@entity.query', '@entity_type.manager']
   tournament.paramconverter.tournament_plugin_instance:
     class: Drupal\tournament\ParamConverter\TournamentPluginInstanceConverter
     tags:

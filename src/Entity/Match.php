@@ -48,7 +48,7 @@ class Match extends ContentEntityBase implements MatchInterface {
       ->setDescription(t('The UUID of the Match entity.'))
       ->setReadOnly(TRUE);
 
-    $fields['match_result'] = BaseFieldDefinition::create('entity_reference')
+    $fields['match_results'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Match result'))
       ->setDescription(t('A reference to a match result entity.'))
       ->setRevisionable(FALSE)
@@ -69,6 +69,11 @@ class Match extends ContentEntityBase implements MatchInterface {
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was last edited.'));
+
+    $fields['tournament_reference'] = BaseFieldDefinition::create('entity_reference')
+      ->setSetting('target_type', 'tournament')
+      ->setLabel(t('Tournament reference'))
+      ->setDescription(t('The tournament this match belongs to.'));
 
     return $fields;
   }

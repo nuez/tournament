@@ -20,6 +20,7 @@ use Drupal\Core\Access\AccessResult;
  * @see \Drupal\tournament\Entity\Tournament.
  */
 class TournamentAccessControlHandler extends EntityAccessControlHandler {
+
   /**
    * {@inheritdoc}
    */
@@ -65,11 +66,17 @@ class TournamentAccessControlHandler extends EntityAccessControlHandler {
    */
   public function fieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account = NULL, FieldItemListInterface $items = NULL, $return_as_object = FALSE) {
     if ('participant_type' == $field_definition->getName() && $operation != 'view') {
+
       /**
        * @var TournamentInterface $entity
        */
-      $entity = $items->getEntity();
-      if($entity->hasParticipants()){
+      $tournament = $items->getEntity();
+
+      // Get the Tournament Manager Service. Since the Control Handler doesn't
+      // have access to the Dependency Injection Container we have to
+      // access it through the Static Service Container Wrapper.
+      $tournamentManager = \Drupal::getContainer()->get('plugin.manager.tournament.manager');
+      if($tournamentManager->hasParticipants($tournament)){
         return AccessResult::forbidden();
       }
     }

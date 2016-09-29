@@ -12,6 +12,7 @@ use Drupal\plugin\PluginType\PluginTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\tournament\ParamConverter\TournamentPluginInstanceConverter;
 use Drupal\tournament\Plugin\TournamentInterface;
+use Drupal\tournament\Plugin\TournamentPluginInterface;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Routing\Route;
 
@@ -64,7 +65,7 @@ class TournamentPluginInstanceConverterTest extends UnitTestCase {
     parent::setUp();
     $this->pluginManager  = $this->prophesize(PluginManagerInterface::class);
     $this->pluginTypeManager = $this->prophesize(PluginTypeManagerInterface::class);
-    $this->tournamentPluginInstance = $this->prophesize(TournamentInterface::class);
+    $this->tournamentPluginInstance = $this->prophesize(TournamentPluginInterface::class);
     $this->pluginType = $this->prophesize(PluginTypeInterface::class);
   }
 

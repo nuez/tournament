@@ -17,13 +17,6 @@ use Drupal\user\EntityOwnerInterface;
  * @ingroup tournament
  */
 interface TournamentInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
-  // Add get/set methods for your configuration properties here.
-  /**
-   * Gets the Tournament type.
-   *
-   * @return string
-   *   The Tournament type.
-   */
 
   /**
    * Gets the Tournament name.
@@ -93,11 +86,6 @@ interface TournamentInterface extends ContentEntityInterface, EntityChangedInter
   public function getStarted();
 
   /**
-   * See if Tournament has participants.
-   */
-  public function hasParticipants();
-
-  /**
    * Get Particpant Type
    */
   public function getParticipantType();
@@ -112,6 +100,14 @@ interface TournamentInterface extends ContentEntityInterface, EntityChangedInter
    *  The called Tournament entity.
    */
   public function setStarted($started);
+
+  /**
+   * Gets the configuration.
+   *
+   * @return array
+   */
+  public function getConfig();
+
 
 
 }
