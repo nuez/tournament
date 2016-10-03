@@ -6,6 +6,7 @@
 
 namespace Drupal\Tests\tournament_round_robin\Unit\Plugin\Tournament;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Tests\UnitTestCase;
 use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\MatchResult;
@@ -199,6 +200,14 @@ class RoundRobinTest extends UnitTestCase {
         ->willReturn(1 + $i);
       $this->participants[] = $this->participant;
     }
+
+    $this->entityTypeManager = $this->getMockBuilder('\Drupal\Core\Entity\EntityTypeManager')
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $this->container = new ContainerBuilder();
+    $this->container->set('entity_type.manager', $this->entityTypeManager);
+    \Drupal::setContainer($this->container);
 
     $this->tournamentManager = $this->prophesize(TournamentManager::class);
     $this->tournamentManager->getParticipants($this->tournament)->willReturn($this->participants);
