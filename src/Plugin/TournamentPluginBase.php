@@ -14,6 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\ContextAwarePluginAssignmentTrait;
 use Drupal\Core\Plugin\ContextAwarePluginBase;
+use Drupal\tournament\Entity\Match;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -66,4 +67,46 @@ abstract class TournamentPluginBase extends ContextAwarePluginBase implements To
     return $form;
   }
 
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \InvalidArgumentException
+   *   When $results is not an array of integers that matches the amount of
+   *   associated MatchResult entities.
+   *
+   * @throws \Exception
+   *   When the status of the match is not confirmed yet or already been
+   *   processed.
+   */
+  public function processMatchResult(Match $match, $results) {
+
+    // Check the format of the $result parameter.
+    if (!is_array($results)) {
+      throw new \InvalidArgumentException('The result must be an array of integers.');
+    }
+
+    foreach ($results as $result) {
+      if (!is_numeric($result)) {
+        throw new \InvalidArgumentException('The result must be an array of integers.');
+      }
+    }
+
+    // Check if the amount of results matches the amount of MatchResult entities.
+    if(count($match->getMatchResults()) != count($results)){
+      throw new \InvalidArgumentException('The amount of MatchResults has to 
+      match the amount of results passed as an argument.');
+    }
+
+    // Check if the Match result can be processed according to the status.
+    if (Match::PROCESSED == $match->getStatus()) {
+      throw new \Exception('The match result has already been processed.');
+    }
+    if (Match::CONFIRMED != $match->getStatus()) {
+      throw new \Exception('The match result can only be processed when the result is confirmed.');
+    }
+
+    // Save the state of the Match to 'Processed'.
+    $match->set('status', Match::PROCESSED)->save();
+  }
 }

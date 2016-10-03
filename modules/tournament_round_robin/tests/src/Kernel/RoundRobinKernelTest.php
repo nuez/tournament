@@ -110,17 +110,20 @@ class RoundRobinKernelTest extends KernelTestBase {
 
 
   /**
-   * Test processing the scores.
+   * Test processing the scores with E
+   *
+   * @expectedException \Exception
    */
-  public function testScoreProcessing(){
+  public function testScoreProcessingWithAlreadyProcessedMatchResult(){
     $this->matches = $this->tournamentPlugin->generateMatches($this->tournament);
 
     /** @var Match $match */
     $match = $this->matches[0];
 
-    $match->set('status', 8);
+    $match->set('status', 3);
 
-    $match->processResult([10,20]);
+    $this->tournamentPlugin->processMatchResult($match, [3,6]);
+
   }
 
 

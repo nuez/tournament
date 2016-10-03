@@ -122,20 +122,4 @@ class TournamentManager extends DefaultPluginManager implements TournamentManage
     return $result != 0;
   }
 
-  /**
-   * @param \Drupal\tournament\Entity\Match $match
-   * @param mixed $results
-   */
-  public function processMatchResult(Match $match, $results) {
-    if (!is_array($results)) {
-      throw new \InvalidArgumentException('The result must be an array of numbers.');
-    }
-    foreach ($results as $result) {
-      if (!is_numeric($result)) {
-        throw new \InvalidArgumentException('The result must be an array of numbers.');
-      }
-    }
-
-  }
-
 }

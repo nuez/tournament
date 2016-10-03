@@ -7,6 +7,7 @@
 namespace Drupal\tournament\Plugin;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\Tournament;
 
 interface TournamentManagerInterface extends ContainerFactoryPluginInterface{

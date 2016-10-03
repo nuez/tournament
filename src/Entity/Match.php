@@ -51,6 +51,21 @@ class Match extends ContentEntityBase implements MatchInterface {
   }
 
   /**
+   * @return integer
+   *  Return the Status integer of the match.
+   */
+  public function getStatus(){
+    return $this->get('status')->getValue();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMatchResults(){
+    return $this->get('match_results')->referencedEntities();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {

@@ -8,6 +8,7 @@
 namespace Drupal\tournament\Plugin;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\MatchResult;
 use Drupal\tournament\Entity\Tournament;
 use Drupal\tournament\Entity\TournamentInterface;
@@ -25,13 +26,14 @@ interface TournamentPluginInterface extends PluginInspectionInterface {
   public function generateMatches(TournamentInterface $tournament);
 
   /**
-   * Updating the League participants
+   * Process the results and update the tournament.
    *
-   * @param \Drupal\tournament\Entity\MatchResult $matchResult
-   * @return mixed
+   * @param \Drupal\tournament\Entity\Match $match
+   *   The Match Entity to update.
+   *
+   * @param mixed $results
+   *   An array of result integers.
    */
-  //public function processMatchResult(MatchResult $matchResult);
-
-
+  public function processMatchResult(Match $match, $results);
 
 }

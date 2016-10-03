@@ -16,4 +16,16 @@ interface MatchInterface extends ContentEntityInterface, EntityChangedInterface 
    * @return Participant[].
    */
   public function getParticipants();
+
+  /**
+   * @return integer
+   *   Status
+   */
+  public function getStatus();
+
+  /**
+   * @return MatchResult[]
+   *   MatchResult entities.
+   */
+  public function getMatchResults();
 }

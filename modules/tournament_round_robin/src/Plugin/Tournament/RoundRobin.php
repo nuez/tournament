@@ -7,6 +7,7 @@ namespace Drupal\tournament_round_robin\Plugin\Tournament;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\tournament\Entity\Match;
+use Drupal\tournament\Entity\MatchResult;
 use Drupal\tournament\Entity\Tournament;
 use Drupal\tournament\Entity\TournamentInterface;
 use Drupal\tournament\Plugin\TournamentPluginBase;
@@ -22,7 +23,6 @@ use Zend\Diactoros\MessageTrait;
  *   description = @Translation("Round Robin Tournament type") * )
  */
 class RoundRobin extends TournamentPluginBase {
-
 
   use MessageTrait;
 
@@ -203,11 +203,21 @@ class RoundRobin extends TournamentPluginBase {
       ]);
     $matchId = $match->set('match_results', [$matchResultHome->id(), $matchResultAway->id()])->save();
 
-
     return $entityTypeManager->getStorage('tournament_match')->load($matchId);
   }
 
   /**
-   * Process result
+   * {@inheritdoc}
+   *
+   * Update MatchResult entities linked to the match and update Tournament
+   * Participants.
    */
+  public function processMatchResult(Match $match, $results) {
+    parent::processMatchResult($match, $results);
+    $matchResults = $match->getMatchResults();
+    foreach($matchResults as $key => $matchResult){
+      /** @var MatchResult $matchResult */
+      $matchResult->set('score', $results[$key])->save();
+    }
+  }
 }
