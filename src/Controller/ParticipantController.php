@@ -48,7 +48,7 @@ class ParticipantController extends ControllerBase {
   }
 
   public function view() {
-    return array('#markup' => t('@todo show participant'));
+    return array('#markup' => $this->t('String'));
   }
 
   public function title() {
@@ -84,7 +84,6 @@ class ParticipantController extends ControllerBase {
    * @return array A render array.
    */
   public function add() {
-    return ['#markup' => 'test'];
 
     $tournamentTypes = $this->pluginTypeManager->getPluginType('tournament')
       ->getPluginManager()

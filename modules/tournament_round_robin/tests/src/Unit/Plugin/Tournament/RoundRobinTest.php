@@ -7,14 +7,14 @@
 namespace Drupal\Tests\tournament_round_robin\Unit\Plugin\Tournament;
 
 use Drupal\Tests\UnitTestCase;
-use Drupal\tournament\Entity\Match;
-use Drupal\tournament\Entity\MatchInterface;
 use Drupal\tournament\Entity\Participant;
 use Drupal\tournament\Entity\Tournament;
 use Drupal\tournament\Entity\TournamentInterface;
+use Drupal\tournament\Plugin\TournamentManager;
+use Drupal\tournament\Plugin\TournamentManagerInterface;
 use Drupal\tournament_round_robin\Plugin\Tournament\RoundRobin;
-use Prophecy\Prophecy\MethodProphecy;
 use Prophecy\Prophecy\ObjectProphecy;
+use spec\Prophecy\Prophecy\ObjectProphecySpec;
 
 /**
  * @coversDefaultClass \Drupal\tournament_round_robin\Plugin\Tournament\RoundRobin
@@ -29,7 +29,14 @@ class RoundRobinTest extends UnitTestCase {
    */
   protected $tournament;
 
+  /**
+   * @var TournamentManager|ObjectProphecy
+   */
+  protected $tournamentManager;
 
+  /**
+   * @var Participant
+   */
   protected $participant;
 
   /**
@@ -44,7 +51,7 @@ class RoundRobinTest extends UnitTestCase {
    */
   public function setUp() {
     parent::setUp();
-    $this->sut = new TestRoundRobin([], '', []);
+
   }
 
   /**
@@ -86,7 +93,6 @@ class RoundRobinTest extends UnitTestCase {
     // the index of the iteration.
     $participants = [];
     for ($i = 0; $i < $participants_number; $i++) {
-
       $participantMock->expects($this->at($i))
         ->method('id')
         ->willReturn(1 + $i);
@@ -95,9 +101,14 @@ class RoundRobinTest extends UnitTestCase {
 
     // The getParticipants() method will return the array of Mock Participants
     // previously defined.
-    $tournamentMock->expects($this->any())
-      ->method('getParticipants')
-      ->willReturn($participants);
+
+    /** @var ObjectProphecySpec $tournamentMananagerProphesy */
+    $tournamentMananagerProphesy = $this->prophesize(TournamentManager::class);
+    $tournamentMananagerProphesy->getParticipants($tournamentMock)->willReturn($participants);
+
+    $this->tournamentManager = $tournamentMananagerProphesy->reveal();
+
+    $this->sut = new TestRoundRobin([], '', [], $this->tournamentManager);
 
     $matches = $this->sut->generateMatches($tournamentMock);
 

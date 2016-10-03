@@ -12,4 +12,8 @@ use Drupal\Core\Entity\EntityChangedInterface;
  */
 interface MatchInterface extends ContentEntityInterface, EntityChangedInterface {
 
+  /**
+   * @return Participant[].
+   */
+  public function getParticipants();
 }

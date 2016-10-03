@@ -8,3 +8,6 @@ services:
     tags:
       - { name: paramconverter }
     arguments: ['@plugin.plugin_type_manager']
+  tournament.match.manager:
+    class: Drupal\tournament\MatchManager
+    arguments: ['@entity.query', '@entity_type.manager']

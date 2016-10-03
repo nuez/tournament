@@ -30,4 +30,6 @@ interface TournamentManagerInterface extends ContainerFactoryPluginInterface{
    * @return mixed
    */
   public function hasParticipants(Tournament $tournament);
+
+
 }

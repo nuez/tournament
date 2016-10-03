@@ -7,13 +7,12 @@
 
 namespace Drupal\tournament\Plugin;
 
-use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\tour\Entity\Tour;
+use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\Tournament;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -94,7 +93,6 @@ class TournamentManager extends DefaultPluginManager implements TournamentManage
    * This query should only be executed once in the execution stack so
    * it needs to be clear if it has been executed before.
    *
-
    * @todo See if there is a more elegant way of setting this.
    */
   public function getParticipants(Tournament $tournament) {
@@ -122,6 +120,22 @@ class TournamentManager extends DefaultPluginManager implements TournamentManage
       ->condition('tournament_reference', $tournament->id());
     $result = $query->count()->execute();
     return $result != 0;
+  }
+
+  /**
+   * @param \Drupal\tournament\Entity\Match $match
+   * @param mixed $results
+   */
+  public function processMatchResult(Match $match, $results) {
+    if (!is_array($results)) {
+      throw new \InvalidArgumentException('The result must be an array of numbers.');
+    }
+    foreach ($results as $result) {
+      if (!is_numeric($result)) {
+        throw new \InvalidArgumentException('The result must be an array of numbers.');
+      }
+    }
+
   }
 
 }

@@ -34,6 +34,8 @@ class MatchResult extends ContentEntityBase implements MatchResultInterface {
 
   use EntityChangedTrait;
 
+
+
   /**
    * {@inheritdoc}
    */

@@ -6,6 +6,7 @@ namespace Drupal\tournament_round_robin\Plugin\Tournament;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\Tournament;
 use Drupal\tournament\Entity\TournamentInterface;
 use Drupal\tournament\Plugin\TournamentPluginBase;
@@ -143,7 +144,7 @@ class RoundRobin extends TournamentPluginBase {
       }
       foreach ($items as $home_id => $item) {
         foreach ($item as $away_id) {
-          $match = $this->createMatch($tournament, $home_id, $away_id);
+          $match = $this->createMatch($tournament, (int) $home_id, (int) $away_id);
           $matches_per_round[] = $match;
         }
       }
@@ -174,7 +175,7 @@ class RoundRobin extends TournamentPluginBase {
    * @param $home_participant_id
    * @param $away_participant_id
    *
-   * @return int
+   * @return int Match ID
    */
   public function createMatch(Tournament $tournament, $home_participant_id, $away_participant_id) {
     $entityTypeManager = \Drupal::getContainer()->get('entity_type.manager');
@@ -183,22 +184,30 @@ class RoundRobin extends TournamentPluginBase {
       ->create([
         'participant' => $home_participant_id,
         'score' => 0,
-      ])->save();
+      ]);
+    $matchResultHome->save();
 
     $matchResultAway = $entityTypeManager->getStorage('tournament_match_result')
       ->create([
         'participant' => $away_participant_id,
         'score' => 0,
-      ])->save();
+      ]);
+    $matchResultAway->save();
 
-    $matchId = $entityTypeManager->getStorage('tournament_match')
+    $match = $entityTypeManager->getStorage('tournament_match')
       ->create([
         'created' => REQUEST_TIME,
         'updated' => REQUEST_TIME,
         'tournament_reference' => $tournament->id(),
-        'match_results' => [$matchResultHome, $matchResultAway],
-      ])->save();
+        'status' => Match::AWAITING_RESULT,
+      ]);
+    $matchId = $match->set('match_results', [$matchResultHome->id(), $matchResultAway->id()])->save();
+
 
     return $entityTypeManager->getStorage('tournament_match')->load($matchId);
   }
+
+  /**
+   * Process result
+   */
 }

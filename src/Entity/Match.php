@@ -35,6 +35,21 @@ class Match extends ContentEntityBase implements MatchInterface {
 
   use EntityChangedTrait;
 
+  const AWAITING_RESULT = 0;
+
+  const AWAITING_CONFIRMATION = 1;
+
+  const CONFIRMED = 2;
+
+  const PROCESSED = 3;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParticipants() {
+    return $this->get('match_results')->referencedEntities()->get('participant');
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -74,6 +89,17 @@ class Match extends ContentEntityBase implements MatchInterface {
       ->setSetting('target_type', 'tournament')
       ->setLabel(t('Tournament reference'))
       ->setDescription(t('The tournament this match belongs to.'));
+
+    $fields['status'] = BaseFieldDefinition::create('list_integer')
+      ->setLabel(t('Match status'))
+      ->setSetting('allowed_values', [
+        self::AWAITING_RESULT => t('Awaiting result'),
+        self::AWAITING_CONFIRMATION  => t('Awaiting confirmation'),
+        self::CONFIRMED  => t('Result accepted'),
+        self::PROCESSED => t('Result processed'),
+      ])
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE);
 
     return $fields;
   }
