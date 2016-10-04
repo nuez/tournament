@@ -6,8 +6,10 @@ namespace Drupal\tournament_round_robin\Plugin\Tournament;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\tour\Entity\Tour;
 use Drupal\tournament\Entity\Match;
 use Drupal\tournament\Entity\MatchResult;
+use Drupal\tournament\Entity\Participant;
 use Drupal\tournament\Entity\Tournament;
 use Drupal\tournament\Entity\TournamentInterface;
 use Drupal\tournament\Plugin\TournamentPluginBase;
@@ -201,7 +203,10 @@ class RoundRobin extends TournamentPluginBase {
         'tournament_reference' => $tournament->id(),
         'status' => Match::AWAITING_RESULT,
       ]);
-    $matchId = $match->set('match_results', [$matchResultHome->id(), $matchResultAway->id()])->save();
+    $matchId = $match->set('match_results', [
+      $matchResultHome->id(),
+      $matchResultAway->id()
+    ])->save();
 
     return $entityTypeManager->getStorage('tournament_match')->load($matchId);
   }
@@ -214,10 +219,87 @@ class RoundRobin extends TournamentPluginBase {
    */
   public function processMatchResult(Match $match, $results) {
     parent::processMatchResult($match, $results);
+    if ($results[0] == $results[1]) {
+      $this->processMatchDraw($match, $results);
+    }
+    else {
+      $this->processMatchWin($match, $results);
+    }
+  }
+
+  /**
+   * Processes a match that was drawn.
+   *
+   * @param \Drupal\tournament\Entity\Match $match
+   * @param $results
+   */
+  private function processMatchDraw(Match $match, $results) {
     $matchResults = $match->getMatchResults();
+    $tournament = $match->get('tournament_reference')->referencedEntities()[0];
+    $config = $tournament->getConfig();
+
     foreach($matchResults as $key => $matchResult){
       /** @var MatchResult $matchResult */
       $matchResult->set('score', $results[$key])->save();
+      $participant = $matchResult->get('participant')->referencedEntities()[0];
+      $participant->set('draw', $participant->get('draw')->getString() + 1);
+      $score = $results[$key];
+      $participant->set('points', $participant->get('points')->getString() + $config['points_draw']);
+      $participant->set('score_for', $participant->get('score_for')->getString() + $score);
+      $participant->set('score_against', $participant->get('score_against')->getString() + $score);
+      $participant->save();
+    }
+  }
+
+  /**
+   * Processes a Match that was won/lost.
+   *
+   * @param \Drupal\tournament\Entity\Match $match
+   * @param $results
+   */
+  private function processMatchWin(Match $match, $results) {
+
+    $matchResults = $match->getMatchResults();
+
+    // Sort the array of results so the highest result goes first.
+    arsort($results);
+
+    /** @var Tournament $tournament */
+    $tournament = $match->get('tournament_reference')->referencedEntities()[0];
+    $config = $tournament->getConfig();
+
+    $i = 0;
+    foreach ($results as $key => $score) {
+      /** @var MatchResult $matchResult */
+      $matchResult = $matchResults[$key];
+      $matchResult->set('score', $results[$key])->save();
+      // If this is the first element, then this is the winner.
+      $participant = $matchResult->get('participant')
+        ->referencedEntities()[0];
+
+      if ($i == 0) { // Handle the winner first
+        /** @var Participant $participant */
+        $participant->set('win', $participant->get('win')->getString() + 1);
+        $participant->set('points', $participant->get('points')
+            ->getString() + $config['points_win']);
+        $participant->set('score_for', $participant->get('score_for')
+            ->getString() + ($key == 0 ? $results[0] : $results[1]));
+        $participant->set('score_against', $participant->get('score_against')
+            ->getString() + ($key == 0 ? $results[1] : $results[0]));
+      }
+      elseif ($i == 1) {
+        /** @var Participant $participant */
+        $participant->set('loss', $participant->get('win')->getString() + 1);
+        $participant->set('points', $participant->get('points')
+            ->getString() + $config['points_loss']);
+        $participant->set('score_for', $participant->get('score_for')
+            ->getString() + ($key == 0 ? $results[0] : $results[1]));
+        $participant->set('score_against', $participant->get('score_against')
+            ->getString() + ($key == 0 ? $results[1] : $results[0]));
+
+      }
+      $participant->save();
+      $i++;
     }
   }
 }

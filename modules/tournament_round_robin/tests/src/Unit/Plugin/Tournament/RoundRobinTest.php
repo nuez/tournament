@@ -82,7 +82,7 @@ class RoundRobinTest extends UnitTestCase {
    * @param integer $participants_number
    *   Number of participants to participate.
    */
-  public function prepareRoundRobinTests($rounds, $participants_number){
+  public function prepareRoundRobinTests($rounds, $participants_number) {
     /** @var \PHPUnit_Framework_MockObject_MockObject $participant */
     $this->tournament = $this->getMockBuilder(Tournament::class)
       ->setMethods(['getParticipants', 'getConfig'])
@@ -142,7 +142,8 @@ class RoundRobinTest extends UnitTestCase {
     }
 
     $this->tournamentManager = $this->prophesize(TournamentManager::class);
-    $this->tournamentManager->getParticipants($this->tournament)->willReturn($this->participants);
+    $this->tournamentManager->getParticipants($this->tournament)
+      ->willReturn($this->participants);
 
     $this->sut = new TestRoundRobin([], '', [], $this->tournamentManager->reveal());
 
@@ -182,57 +183,5 @@ class RoundRobinTest extends UnitTestCase {
 
   }
 
-
-  /**
-   * Test MatchProcess
-   */
-  public function testRoundRobinMatchProcess(){
-    $this->prepareRoundRobinTests(2, 4);
-
-    // The getParticipants method would normally return an array of Participants
-    // for the tournament. In this case We use Mocks of the participants.
-    // Since the id of the participant is used for the generated match (through
-    // the id() method, we need to stub the id() method and make it return
-    // the index of the iteration.
-    for ($i = 0; $i < 4; $i++) {
-      $this->participant->expects($this->at($i))
-        ->method('id')
-        ->willReturn(1 + $i);
-      $this->participants[] = $this->participant;
-    }
-
-    $this->entityTypeManager = $this->getMockBuilder('\Drupal\Core\Entity\EntityTypeManager')
-      ->disableOriginalConstructor()
-      ->getMock();
-
-    $this->container = new ContainerBuilder();
-    $this->container->set('entity_type.manager', $this->entityTypeManager);
-    \Drupal::setContainer($this->container);
-
-    $this->tournamentManager = $this->prophesize(TournamentManager::class);
-    $this->tournamentManager->getParticipants($this->tournament)->willReturn($this->participants);
-
-    $this->sut = new RoundRobin([], '', [], $this->tournamentManager->reveal());
-
-    $this->matches = $this->sut->generateMatches($this->tournament);
-
-    /** @var Match $match */
-    $match = $this->matches[0];
-
-    $results = $match->getMatchResults();
-
-    /** @var MatchResult $result_A */
-    $result_A = $results[0];
-    $participant_A = $result_A->get('participant');
-
-    /** @var MatchResult $result_B */
-    $result_B = $results[1];
-
-    $participant_B = $result_B->get('participant');
-
-
-
-    $this->assertTrue(TRUE);
-  }
 
 }
