@@ -3,11 +3,12 @@ services:
     class: Drupal\tournament\Plugin\TournamentManager
     parent: default_plugin_manager
     arguments: ['@entity.query', '@entity_type.manager']
+  plugin.manager.tournament.ranking.manager:
+    class: Drupal\tournament\Plugin\TournamentRankingManager
+    parent: default_plugin_manager
+    arguments: ['@entity.query', '@entity_type.manager']
   tournament.paramconverter.tournament_plugin_instance:
     class: Drupal\tournament\ParamConverter\TournamentPluginInstanceConverter
     tags:
       - { name: paramconverter }
     arguments: ['@plugin.plugin_type_manager']
-  tournament.match.manager:
-    class: Drupal\tournament\MatchManager
-    arguments: ['@entity.query', '@entity_type.manager']

@@ -12,7 +12,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a Tournament annotation object.
  *
- * @see \Drupal\tournament\Plugin\TournamentPluginManager
+ * @see \Drupal\tournament\Plugin\TournamentManager
  * @see plugin_api
  *
  * @Annotation
