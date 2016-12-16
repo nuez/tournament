@@ -238,15 +238,18 @@ class RoundRobin extends TournamentPluginBase {
     $tournament = $match->get('tournament_reference')->referencedEntities()[0];
     $config = $tournament->getConfig();
 
-    foreach($matchResults as $key => $matchResult){
+    foreach ($matchResults as $key => $matchResult) {
       /** @var MatchResult $matchResult */
       $matchResult->set('score', $results[$key])->save();
       $participant = $matchResult->get('participant')->referencedEntities()[0];
       $participant->set('draw', $participant->get('draw')->getString() + 1);
       $score = $results[$key];
-      $participant->set('points', $participant->get('points')->getString() + $config['points_draw']);
-      $participant->set('score_for', $participant->get('score_for')->getString() + $score);
-      $participant->set('score_against', $participant->get('score_against')->getString() + $score);
+      $participant->set('points', $participant->get('points')
+          ->getString() + $config['points_draw']);
+      $participant->set('score_for', $participant->get('score_for')
+          ->getString() + $score);
+      $participant->set('score_against', $participant->get('score_against')
+          ->getString() + $score);
       $participant->save();
     }
   }
