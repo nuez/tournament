@@ -97,7 +97,7 @@ class RoundRobinKernelTest extends KernelTestBase {
       'participant_type' => 'user',
       'name' => $this->randomString(),
       'uid' => 1,
-      'status_published' => TRUE,
+      'status' => Tournament::STATUS_UNSTARTED,
       'langcode' => Language::LANGCODE_NOT_SPECIFIED,
       'created' => REQUEST_TIME,
       'updated' => REQUEST_TIME,

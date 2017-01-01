@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides the Tournament plugin manager.
  */
-class TournamentRankingManager extends DefaultPluginManager implements RankingManagerInterface {
+class TournamentRankingManager extends DefaultPluginManager implements TournamentRankingManagerInterface {
 
   /**
    * @var QueryFactory $entityQuery

@@ -13,6 +13,7 @@ use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\tournament\Entity\Match;
+use Drupal\tournament\Entity\Participant;
 use Drupal\tournament\Entity\Tournament;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,17 +23,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class TournamentManager extends DefaultPluginManager implements TournamentManagerInterface {
 
   /**
-   * Array of stored participants per tournament id.
-   *
-   * @var mixed
-   */
-  private $participants;
-
-  /**
    * @var QueryFactory $entityQuery
    */
   private $entityQuery;
-
 
   /**
    * @var EntityTypeManagerInterface $entityTypeManager
@@ -78,9 +71,15 @@ class TournamentManager extends DefaultPluginManager implements TournamentManage
    * {@inheritdoc}
    */
   public function getMatches(Tournament $tournament) {
-    $this->entityQuery->get('tournament_match')
-      ->condition('tournament_reference', $tournament->id())
-      ->execute();
+    if (!$tournament->matches) {
+      $matchIds = $this->entityQuery->get('tournament_match')
+        ->condition('tournament_reference', $tournament->id())
+        ->sort('id', 'asc')
+        ->execute();
+      $tournament->matches = $this->entityTypeManager->getStorage('tournament_match')
+        ->loadMultiple(array_keys($matchIds));
+    }
+    return $tournament->matches;
   }
 
   /**
@@ -96,30 +95,30 @@ class TournamentManager extends DefaultPluginManager implements TournamentManage
    * @todo See if there is a more elegant way of setting this.
    */
   public function getParticipants(Tournament $tournament) {
-    if (!$this->participants[$tournament->id()]) {
+    if (!$tournament->participants) {
       $participant_ids = $this->entityQuery->get('tournament_participant')
         ->condition('tournament_reference', $tournament->id())
         ->execute();
 
       $participants = $this->entityTypeManager->getStorage('tournament_participant')
-        ->loadMultiple($participant_ids);
+        ->loadMultiple(array_keys($participant_ids));
 
-      $this->participants[$tournament->id()] = $participants;
+      $tournament->participants = $participants;
     }
-    return $this->participants[$tournament->id()];
+    return $tournament->participants;
   }
+
+
 
   /**
    * See if tournament has participants.
    *
    * @param \Drupal\tournament\Entity\Tournament $tournament
-   * @return bool
+   * @return bool FALSE when empty or FALSE
    */
   public function hasParticipants(Tournament $tournament) {
-    $query = $this->entityQuery('tournament_participant')
-      ->condition('tournament_reference', $tournament->id());
-    $result = $query->count()->execute();
-    return $result != 0;
+    $participants = $this->getParticipants($tournament);
+    return empty($participants) ? FALSE : TRUE;
   }
 
 }

@@ -9,6 +9,7 @@ namespace Drupal\tournament\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -16,98 +17,26 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup tournament
  */
-interface TournamentInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
+interface TournamentInterface extends ContentEntityInterface, EntityChangedInterface {
 
   /**
-   * Gets the Tournament name.
-   *
-   * @return string
-   *   Name of the Tournament.
+   * @return int Status of the Tournament
    */
-  public function getName();
+  public function getStatus();
 
   /**
-   * Sets the Tournament name.
-   *
-   * @param string $name
-   *   The Tournament name.
-   *
-   * @return TournamentInterface
-   *   The called Tournament entity.
-   */
-  public function setName($name);
-
-  /**
-   * Gets the Tournament creation timestamp.
-   *
-   * @return int
-   *   Creation timestamp of the Tournament.
-   */
-  public function getCreatedTime();
-
-  /**
-   * Sets the Tournament creation timestamp.
-   *
-   * @param int $timestamp
-   *   The Tournament creation timestamp.
-   *
-   * @return TournamentInterface
-   *   The called Tournament entity.
-   */
-  public function setCreatedTime($timestamp);
-
-  /**
-   * Returns the Tournament published status indicator.
-   *
-   * Unpublished Tournament are only visible to restricted users.
-   *
-   * @return bool
-   *   TRUE if the Tournament is published.
-   */
-  public function isPublished();
-
-  /**
-   * Sets the published status of a Tournament.
-   *
-   * @param bool $published
-   *   TRUE to set this Tournament to published, FALSE to set it to unpublished.
-   *
-   * @return TournamentInterface
-   *   The called Tournament entity.
-   */
-  public function setPublished($published);
-
-  /**
-   * Gets the started status of the tournament.
-   *
-   * @return bool $started
-   *  TRUE if the Tournament has started.
-   */
-  public function getStarted();
-
-  /**
-   * Get Particpant Type
+   * @return string Participant Type
    */
   public function getParticipantType();
 
   /**
-   * Sets the started status of the tournament.
-   *
-   * @param bool $started
-   *   TRUE to set this tournament to started.
-   *
-   * @return TournamentInterface
-   *  The called Tournament entity.
+   * @return string Tournament Type
    */
-  public function setStarted($started);
+  public function getTournamentType();
 
   /**
-   * Gets the configuration.
-   *
-   * @return array
+   * @return AccountInterface
    */
-  public function getConfig();
-
-
+  public function getAuthor();
 
 }

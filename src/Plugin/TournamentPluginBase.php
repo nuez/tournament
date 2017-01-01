@@ -15,6 +15,9 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\ContextAwarePluginAssignmentTrait;
 use Drupal\Core\Plugin\ContextAwarePluginBase;
 use Drupal\tournament\Entity\Match;
+use Drupal\tournament\Entity\Participant;
+use Drupal\tournament\Entity\Team;
+use Drupal\tournament\Entity\Tournament;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -108,5 +111,45 @@ abstract class TournamentPluginBase extends ContextAwarePluginBase implements To
 
     // Save the state of the Match to 'Processed'.
     $match->set('status', Match::PROCESSED)->save();
+  }
+
+  /**
+   * Add the selected array of Users or Teams ot the Tournament.
+   *
+   * @param \Drupal\tournament\Entity\Tournament $tournament
+   * @param \Drupal\tournament\Entity\Team[]|\Drupal\user\Entity\User[] $participants
+   *
+   * @return Participant[]
+   */
+  public function addParticipants(Tournament $tournament, $participants){
+    $participantEntities = [];
+    foreach($participants as $participant){
+      $participantEntity = Participant::create([
+        'type' => $participant->getEntityTypeId(),
+        'tournament_reference' => $tournament,
+        'name' => $participant->label(),
+        'created' => REQUEST_TIME,
+        'changed' => REQUEST_TIME,
+        'points' => 0,
+        'wins' => 0,
+        'draw' => 0,
+        'loss' => 0,
+        'score_for' => 0,
+        'score_against' => 0,
+        $participant->getEntityTypeId() .'_reference' => $participant->id(),
+      ]);
+      $participantEntity->save();
+      $participantEntities[] = $participantEntity;
+    }
+    return $participantEntities;
+  }
+
+  /**
+   * @param \Drupal\tournament\Entity\Tournament $tournament
+   * @return mixed|void
+   */
+  public function startTournament(Tournament $tournament) {
+    $tournament->set('status', Tournament::STATUS_STARTED);
+    $tournament->save();
   }
 }

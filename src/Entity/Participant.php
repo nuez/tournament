@@ -2,12 +2,18 @@
 
 namespace Drupal\tournament\Entity;
 
+use Drupal\Core\Config\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemList;
+use Drupal\Core\Field\FieldDefinitionListenerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\tournament\Exception\TournamentException;
 
 /**
  * Defines the Participant entity.
@@ -56,14 +62,58 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
   use EntityChangedTrait;
 
   use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
-    parent::preCreate($storage_controller, $values);
-    $values += [
+  public function preSave(EntityStorageInterface $storage) {
 
-    ];
+    /** @var QueryFactory $queryFactory */
+    $queryFactory = \Drupal::getContainer()->get('entity.query');
+
+    $tournament = $this->getTournament();
+
+    if(Tournament::STATUS_UNSTARTED != $tournament->getStatus()){
+      throw new TournamentException("Cannot add participants after the 
+      tournament has started", TournamentException::DISALLOWED_ADDING_PARTICIPANTS);
+    }
+
+    $participantType = $this->getParticipantType();
+    $participantEntity = $this->getReferencedEntity();
+
+    $query = $queryFactory->get('tournament_participant')
+      ->condition('tournament_reference', $tournament->id())
+      ->condition($participantType.'_reference', $participantEntity->id());
+
+    if(!empty($query->execute())){
+      throw new TournamentException("It is not allowed to add the same participant
+      entity twice", TournamentException::DISALLOWED_DUPLICATE_PARTICIPANT);
+    }
+    parent::preSave($storage);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTournament() {
+    $entity = $this->get('tournament_reference')->entity;
+    return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParticipantType() {
+    return $this->bundle();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReferencedEntity() {
+    $participantType = $this->getParticipantType();
+    $entity = $this->get($participantType.'_reference')->entity;
+    return $entity;
   }
 
   /**
@@ -84,7 +134,6 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Participant entity.'))
       ->setReadOnly(TRUE);
-
 
     $fields['tournament_reference'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tournament reference'))
@@ -114,10 +163,6 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Publishing status'))
-      ->setDescription(t('A boolean indicating whether the Participant is published.'))
-      ->setDefaultValue(TRUE);
 
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language code'))
@@ -171,75 +216,6 @@ class Participant extends ContentEntityBase implements ParticipantInterface {
     /** @todo Add Streak BaseFieldDefinition. */
 
     return $fields;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getName() {
-    return $this->get('name')->value;
-  }
-
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setName($name) {
-    $this->set('name', $name);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
-    return $this->bundle();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCreatedTime() {
-    return $this->get('created')->value;
-  }
-
-  /**
-   * @return TournamentInterface
-   */
-  public function getTournament() {
-    return $this->get('tournament_id')->value;
-  }
-
-  /**
-   * @param $tournament_id
-   * @return $this
-   */
-  public function setTournament($tournament_id) {
-    $this->set('tournament_id', $tournament_id);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCreatedTime($timestamp) {
-    $this->set('created', $timestamp);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isPublished() {
-    return (bool) $this->getEntityKey('status');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPublished($published) {
-    $this->set('status', $published ? NODE_PUBLISHED : NODE_NOT_PUBLISHED);
-    return $this;
   }
 
 }
